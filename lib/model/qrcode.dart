@@ -1,37 +1,74 @@
+import 'package:flutter/cupertino.dart';
 import 'package:qrcode_app/db/database_provider.dart';
 
-class QRCode{
-  int id;
-  int type;
-  String time;
-  String title;
-  String content;
-  bool isFavorite;
+class QRFields {
+  static final List<String> values = [
+    /// Add all fields
+    id, type, time, title, content, isFavorite
+  ];
 
-  QRCode({this.id, this.type, this.time, this.title, this.content, this.isFavorite});
+  static final String id = '_id';
+  static final String type = 'type';
+  static final String time = 'time';
+  static final String title = 'title';
+  static final String content = 'content';
+  static final String isFavorite = 'isFavorite';
+}
 
-  Map<String, dynamic> toMap(){
+class QRCode {
+  final int id;
+  final int type;
+  final String time;
+  final String title;
+  final String content;
+  final bool isFavorite;
+
+  const QRCode(
+      {this.id,
+      @required this.type,
+      @required this.time,
+      @required this.title,
+      @required this.content,
+      @required this.isFavorite});
+
+  QRCode copy(
+          {int id,
+          bool type,
+          int time,
+          String title,
+          String content,
+          DateTime isFavorite}) =>
+      QRCode(
+        id: id ?? this.id,
+        type: type ?? this.type,
+        time: time ?? this.time,
+        title: title ?? this.title,
+        content: content ?? this.content,
+        isFavorite: isFavorite ?? this.isFavorite,
+      );
+
+  Map<String, dynamic> toJson() {
     var map = <String, dynamic>{
-      DatabaseProvider.COLUMN_TYPE: type,
-      DatabaseProvider.COLUMN_TIME: time,
-      DatabaseProvider.COLUMN_TITLE: title,
-      DatabaseProvider.COLUMN_CONTENT: content,
-      DatabaseProvider.COLUMN_FAVORITE: isFavorite ? 1: 0
+      QRFields.id: id,
+      QRFields.type: type,
+      QRFields.time: time,
+      QRFields.title: title,
+      QRFields.content: content,
+      QRFields.isFavorite: isFavorite ? 1 : 0
     };
 
     if (id != null) {
       map[DatabaseProvider.COLUMN_ID] = id;
     }
-
     return map;
   }
 
-  QRCode.fromMap(Map<String, dynamic> map) {
-    id = map[DatabaseProvider.COLUMN_ID];
-    type = map[DatabaseProvider.COLUMN_TYPE];
-    time = map[DatabaseProvider.COLUMN_TIME];
-    title = map[DatabaseProvider.COLUMN_TITLE];
-    content = map[DatabaseProvider.COLUMN_CONTENT];
-    isFavorite = map[DatabaseProvider.COLUMN_FAVORITE] == 1;
-  }
+  static QRCode fromJson(Map<String, Object> json) => QRCode(
+        id: json[QRFields.id] as int,
+        type: json[QRFields.type] as int,
+        time: json[QRFields.time] as String,
+        title: json[QRFields.title] as String,
+        content: json[QRFields.content] as String,
+        isFavorite: json[QRFields.isFavorite] == 1,
+      );
 }

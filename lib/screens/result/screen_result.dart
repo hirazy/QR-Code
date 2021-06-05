@@ -15,15 +15,12 @@ class ResultScreen extends StatefulWidget {
 }
 
 class ResultState extends State<ResultScreen> {
-
-
   @override
   Widget build(BuildContext context) {
-
     QRCode result = widget.code;
 
     return Scaffold(
-        backgroundColor: Colors.white10,
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -32,24 +29,34 @@ class ResultState extends State<ResultScreen> {
                 cardItemResult(result, () {}, (value) {}),
                 Container(
                   padding:
-                      EdgeInsets.only(top: 10, left: 10, bottom: 10, right: 15),
+                      EdgeInsets.only(top: 10, bottom: 10,),
                   color: Colors.white,
-                  child:
-                      Text(result.content, style: TextStyle(color: Colors.black)),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    cardOption(Icons.search, "Tìm kiếm trên web", () {}),
-                    cardOption(Icons.share, "Chia sẻ", () {}),
-                    cardOption(Icons.copy, "Sao chép", () {}),
-                    cardOption(Icons.shopping_cart_outlined, "Mua ngay", () {})
-                  ],
+                  child: Text(result.content,
+                      style: TextStyle(color: Colors.black, fontSize: 20)),
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 20),
-                  child: Text("ga vc"),
-                )
+                  color: Colors.black54,
+                  margin: EdgeInsets.only(top: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      cardOption(Icons.search, "Tìm kiếm trên web", () {}),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      cardOption(Icons.share, "Chia sẻ", () {}),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      cardOption(Icons.copy, "Sao chép", () {}),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      cardOption(
+                          Icons.shopping_cart_outlined, "Mua ngay", () {})
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

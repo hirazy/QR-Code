@@ -7,7 +7,7 @@ Container itemDrawer(icon, condition, title, click) {
           leading: icon,
           title: Text(
             title,
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal),
           ),
           onTap: click));
 }

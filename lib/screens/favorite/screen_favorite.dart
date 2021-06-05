@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qrcode_app/constants.dart';
 import 'package:qrcode_app/db/database_provider.dart';
 import 'package:qrcode_app/model/qrcode.dart';
+
 import 'package:qrcode_app/widgets/card_item_code.dart';
 
 class FavoriteScreen extends StatefulWidget {
@@ -11,17 +12,32 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class FavoriteState extends State<FavoriteScreen> {
-  List<QRCode> _items;
+  List<QRCode> _items = List<QRCode>();
 
   @override
   void initState() {
     super.initState();
-    DatabaseProvider.instance.getQR().then((value) => _items = value);
+    refreshQRCode();
+  }
+
+  Future refreshQRCode() async {
+    this._items = await DatabaseProvider.instance.getQR();
+    print("refreshQRCode " + _items.toString());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Container(
+        color: Colors.white,
+        width: MediaQuery.of(context).size.width * 0.75,
+        child: Drawer(
+            child: ListView(
+          children: [
+
+          ],
+        )),
+      ),
       body: ListView.builder(itemBuilder: (context, index) {
         return ReorderableListView(
           onReorder: onReorder,
@@ -46,30 +62,7 @@ class FavoriteState extends State<FavoriteScreen> {
         });
       },
       background: Container(color: Colors.red),
-      child: cardItemQR(item, TYPE_FAVORITE, () {
-
-      }, (value) {
-
-      }, () {
-
-      }),
-      // child: InkWell(
-      //   child:
-      //   key: ValueKey(item.id),
-      //   leading: ,
-      //   title: Text(
-      //     '${item.sequence}. ${item.name}',
-      //     style: TextStyle(
-      //       color: Colors.black,
-      //       fontWeight: FontWeight.bold,
-      //     ),
-      //   ),
-      //   subtitle: Text(
-      //     '${item.artist} ${item.songId}',
-      //     style: TextStyle(
-      //       color: Colors.black,
-      //     ),
-      //   ),
+      child: cardItemQR(item, TYPE_FAVORITE, () {}, (value) {}, () {}),
     );
   }
 
