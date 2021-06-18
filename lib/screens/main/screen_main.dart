@@ -10,6 +10,7 @@ import 'package:qrcode_app/db/database_provider.dart';
 import 'package:qrcode_app/model/qrcode.dart';
 import 'package:qrcode_app/screens/create/screen_create.dart';
 import 'package:qrcode_app/screens/create_detail/screen_create_detail.dart';
+import 'package:qrcode_app/screens/faq/screen_faq.dart';
 import 'package:qrcode_app/screens/favorite/screen_favorite.dart';
 import 'package:qrcode_app/screens/history/screen_history.dart';
 import 'package:qrcode_app/screens/main/widget/item_action.dart';
@@ -38,6 +39,7 @@ class MainState extends State<MainScreen> {
   int FRAGMENT_RESULT = 7;
   int FRAGMENT_RESULT_CREATE = 8;
   int FRAGMENT_CREATE_DETAIL = 9;
+  int FRAGMENT_FAQ = 10;
 
   QRViewController controller;
   bool flash = false;
@@ -65,7 +67,9 @@ class MainState extends State<MainScreen> {
       case 2:
         return FavoriteScreen();
       case 3:
-        return HistoryScreen(key: globalKeyHistory,);
+        return HistoryScreen(
+          key: globalKeyHistory,
+        );
       case 4:
         return MyQRScreen(
             contentCreate: (content) {
@@ -102,6 +106,8 @@ class MainState extends State<MainScreen> {
               });
             },
             key: globalKeyCreateDetail);
+      case 10:
+        return MyStatefulWidget();
       default:
         return new Text("Error");
     }
@@ -150,56 +156,56 @@ class MainState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(child: Scaffold(
         extendBodyBehindAppBar: status == 1 ? true : false,
         appBar: AppBar(
             title: status == FRAGMENT_MAIN
                 ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    itemAction(true, Icons.image, 20.0, () {
-                      getImage();
-                    }),
-                    itemAction(
-                        true, flash ? Icons.flash_on : Icons.flash_off, 20.0,
-                        () {
-                      print("flash_on");
-                      globalKey.currentState.swipeFlash();
-                      DatabaseProvider.instance.getQR().then((value) => () {
-                            print(
-                                "_getDrawerFragment" + value.length.toString());
-                          });
+              itemAction(true, Icons.image, 20.0, () {
+                getImage();
+              }),
+              itemAction(
+                  true, flash ? Icons.flash_on : Icons.flash_off, 20.0,
+                      () {
+                    print("flash_on");
+                    globalKey.currentState.swipeFlash();
+                    DatabaseProvider.instance.getQR().then((value) => () {
+                      print(
+                          "_getDrawerFragment" + value.length.toString());
+                    });
 
-                      setState(() {
-                        // MainFragment.globalKey.currentState.swipeFlash();
-                        flash = !flash;
-                      });
+                    setState(() {
+                      // MainFragment.globalKey.currentState.swipeFlash();
+                      flash = !flash;
+                    });
 
-                      // });
-                    }),
-                    itemAction(true, Icons.autorenew, 20.0, () {
-                      // MainFragment.globalKey.currentState.flipCamera();
-                      // await controller.flipCamera();
-                      globalKey.currentState.flipCamera();
-                    })
-                  ])
+                    // });
+                  }),
+              itemAction(true, Icons.autorenew, 20.0, () {
+                // MainFragment.globalKey.currentState.flipCamera();
+                // await controller.flipCamera();
+                globalKey.currentState.flipCamera();
+              })
+            ])
                 : status == FRAGMENT_FAVORITE
-                    ? Text("Yeu thich", style: TextStyle(color: Colors.white))
-                    : status == FRAGMENT_HISTORY
-                        ? Text("Lich su", style: TextStyle(color: Colors.white))
-                        : (status == FRAGMEMT_MYQR ||
-                                status == FRAGMENT_CREATEQR ||
-                                status == FRAGMENT_RESULT_CREATE ||
-                                status == FRAGMENT_CREATE_DETAIL)
-                            ? Text(
-                                "Tạo",
-                                style: TextStyle(color: Colors.white),
-                              )
-                            : (status == FRAGMENT_RESULT)
-                                ? Text("Quét",
-                                    style: TextStyle(color: Colors.white))
-                                : status == FRAGMENT_SETTING
-                                    ? Text("Cài đặt",
-                                        style: TextStyle(color: Colors.white))
-                                    : Text(""),
+                ? Text("Yeu thich", style: TextStyle(color: Colors.white))
+                : status == FRAGMENT_HISTORY
+                ? Text("Lich su", style: TextStyle(color: Colors.white))
+                : (status == FRAGMEMT_MYQR ||
+                status == FRAGMENT_CREATEQR ||
+                status == FRAGMENT_RESULT_CREATE ||
+                status == FRAGMENT_CREATE_DETAIL)
+                ? Text(
+              "Tạo",
+              style: TextStyle(color: Colors.white),
+            )
+                : (status == FRAGMENT_RESULT)
+                ? Text("Quét",
+                style: TextStyle(color: Colors.white))
+                : status == FRAGMENT_SETTING
+                ? Text("Cài đặt",
+                style: TextStyle(color: Colors.white))
+                : Text(""),
             centerTitle: true,
             actions: [
               itemAction(status == FRAGMENT_CREATEQR ? true : false,
@@ -217,171 +223,183 @@ class MainState extends State<MainScreen> {
                   globalKeyCreateDetail.currentState.clickCreate();
                 }
               }),
-              itemAction(status == FRAGMENT_FAVORITE || status == FRAGMENT_HISTORY ? true : false, Icons.sort,
+              itemAction(
+                  status == FRAGMENT_FAVORITE || status == FRAGMENT_HISTORY
+                      ? true
+                      : false,
+                  Icons.sort,
                   10.0, () {
-                    if(status == FRAGMENT_FAVORITE){
-
-                    }else{
-                      globalKeyHistory.currentState.openDrawer();
-                    }
-                  }),
+                if (status == FRAGMENT_FAVORITE) {
+                } else {
+                  globalKeyHistory.currentState.openDrawer();
+                }
+              }),
               status == FRAGMENT_HISTORY ||
-                      status == FRAGMENT_FAVORITE ||
-                      status == FRAGMEMT_MYQR ||
-                      status == FRAGMENT_CREATEQR ||
-                      status == FRAGMENT_RESULT ||
-                      status == FRAGMENT_RESULT_CREATE
+                  status == FRAGMENT_FAVORITE ||
+                  status == FRAGMEMT_MYQR ||
+                  status == FRAGMENT_CREATEQR ||
+                  status == FRAGMENT_RESULT ||
+                  status == FRAGMENT_RESULT_CREATE
                   ? (status == FRAGMENT_HISTORY || status == FRAGMENT_FAVORITE
-                      ? Container(
-                          margin: EdgeInsets.only(left: 10, right: 10),
-                          child: PopupMenuButton(
-                              child: Icon(Icons.more_vert, color: Colors.white),
-                              onSelected: (value) {
-                                _selectItemMainMenu1(value);
-                              },
-                              iconSize: 4,
-                              // child: Center(child: Text('click here')),
-                              itemBuilder: (context) => [
-                                    PopupMenuItem(
-                                        value: 1,
-                                        child: Icon(Icons.restore_from_trash,
-                                            color: Colors.red)),
-                                    PopupMenuItem(
-                                        value: 2,
-                                        child: Icon(
-                                            Icons.format_indent_increase,
-                                            color: Colors.red)),
-                                    PopupMenuItem(
-                                        value: 3,
-                                        child: Icon(
-                                            Icons.format_indent_decrease,
-                                            color: Colors.red)),
-                                    PopupMenuItem(
-                                        value: 4,
-                                        child: Icon(
-                                            Icons.format_indent_decrease_sharp,
-                                            color: Colors.red)),
-                                  ]))
-                      : Container(
-                          margin: EdgeInsets.only(left: 10, right: 10),
-                          child: PopupMenuButton(
-                              child: Icon(Icons.more_vert),
-                              onSelected: (value) {
-                                _selectItemMainMenu2(value);
-                              },
-                              iconSize: 4,
-                              //  child: Center(child: Text('click here')),
-                              itemBuilder: (context) => [
-                                    PopupMenuItem(
-                                        value: 1,
-                                        child: Icon(Icons.restore_from_trash,
-                                            color: Colors.red)),
-                                    PopupMenuItem(
-                                        value: 2,
-                                        child: Icon(
-                                            Icons.format_indent_decrease,
-                                            color: Colors.red)),
-                                    PopupMenuItem(
-                                        value: 3,
-                                        child: Icon(
-                                            Icons.format_indent_decrease,
-                                            color: Colors.red)),
-                                    PopupMenuItem(
-                                        value: 4,
-                                        child: Icon(Icons.create_outlined,
-                                            color: Colors.red)),
-                                  ])))
+                  ? Container(
+                  margin: EdgeInsets.only(left: 10, right: 10),
+                  child: PopupMenuButton(
+                      child: Icon(Icons.more_vert, color: Colors.white),
+                      onSelected: (value) {
+                        _selectItemMainMenu1(value);
+                      },
+                      iconSize: 4,
+                      // child: Center(child: Text('click here')),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                            value: 1,
+                            child: Icon(Icons.restore_from_trash,
+                                color: Colors.red)),
+                        PopupMenuItem(
+                            value: 2,
+                            child: Icon(
+                                Icons.format_indent_increase,
+                                color: Colors.red)),
+                        PopupMenuItem(
+                            value: 3,
+                            child: Icon(
+                                Icons.format_indent_decrease,
+                                color: Colors.red)),
+                        PopupMenuItem(
+                            value: 4,
+                            child: Icon(
+                                Icons.format_indent_decrease_sharp,
+                                color: Colors.red)),
+                      ]))
+                  : Container(
+                  margin: EdgeInsets.only(left: 10, right: 10),
+                  child: PopupMenuButton(
+                      child: Icon(Icons.more_vert),
+                      onSelected: (value) {
+                        _selectItemMainMenu2(value);
+                      },
+                      iconSize: 4,
+                      //  child: Center(child: Text('click here')),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                            value: 1,
+                            child: Icon(Icons.restore_from_trash,
+                                color: Colors.red)),
+                        PopupMenuItem(
+                            value: 2,
+                            child: Icon(
+                                Icons.format_indent_decrease,
+                                color: Colors.red)),
+                        PopupMenuItem(
+                            value: 3,
+                            child: Icon(
+                                Icons.format_indent_decrease,
+                                color: Colors.red)),
+                        PopupMenuItem(
+                            value: 4,
+                            child: Icon(Icons.create_outlined,
+                                color: Colors.red)),
+                      ])))
                   : Text("")
             ]),
         drawer: Container(
             color: Colors.white,
             child: Drawer(
                 child: ListView(
-              children: [
-                itemDrawer(
-                    Icon(
-                      Icons.check_box_outline_blank,
-                    ),
-                    status == FRAGMENT_MAIN,
-                    "Quet", () {
-                  setState(() {
-                    status = FRAGMENT_MAIN;
-                  });
-                  Navigator.pop(context);
-                }),
-                itemDrawer(Icon(Icons.image), false, "Quet hinh anh", () {
-                  getImage();
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(Icon(Icons.favorite), status == FRAGMENT_FAVORITE,
-                    "Yeu thich", () {
-                  setState(() {
-                    status = FRAGMENT_FAVORITE;
-                  });
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(
-                    Icon(Icons.history), status == FRAGMENT_HISTORY, "Lich su",
-                    () {
-                  setState(() {
-                    status = FRAGMENT_HISTORY;
-                  });
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(
-                    Icon(Icons.qr_code), status == FRAGMEMT_MYQR, "QR cua toi",
-                    () {
-                  String myQr = SharePreferenceUtils.getMyQr();
-                  contentCreate = myQr;
-                  oldStatus = FRAGMEMT_MYQR;
-                  print("MyQRScreen: " + oldStatus.toString());
+                  children: [
+                    Wrap(
+                      children: [
+                        itemDrawer(
+                            Icon(
+                              Icons.check_box_outline_blank,
+                            ),
+                            status == FRAGMENT_MAIN,
+                            "Quet", () {
+                          setState(() {
+                            status = FRAGMENT_MAIN;
+                          });
+                          Navigator.pop(context);
+                        }),
+                        itemDrawer(Icon(Icons.image), false, "Quet hinh anh", () {
+                          getImage();
+                          Navigator.pop(context);
+                        }),
+                        itemDivider(),
+                        itemDrawer(Icon(Icons.favorite),
+                            status == FRAGMENT_FAVORITE, "Yeu thich", () {
+                              setState(() {
+                                status = FRAGMENT_FAVORITE;
+                              });
+                              Navigator.pop(context);
+                            }),
+                        itemDivider(),
+                        itemDrawer(Icon(Icons.history), status == FRAGMENT_HISTORY,
+                            "Lich su", () {
+                              setState(() {
+                                status = FRAGMENT_HISTORY;
+                              });
+                              Navigator.pop(context);
+                            }),
+                        itemDivider(),
+                        itemDrawer(Icon(Icons.qr_code), status == FRAGMEMT_MYQR,
+                            "QR cua toi", () {
+                              String myQr = SharePreferenceUtils.getMyQr();
+                              contentCreate = myQr;
+                              oldStatus = FRAGMEMT_MYQR;
+                              print("MyQRScreen: " + oldStatus.toString());
 
-                  setState(() {
-                    if (myQr == "") {
-                      status = FRAGMEMT_MYQR;
-                    } else {
-                      typeCreate = 0;
-                      status = FRAGMENT_RESULT_CREATE;
-                    }
-                  });
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(
-                    Icon(Icons.create), status == FRAGMENT_CREATEQR, "Tao QR",
-                    () {
-                  setState(() {
-                    status = FRAGMENT_CREATEQR;
-                  });
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(Icon(Icons.settings), false, "Cai dat", () {
-                  setState(() {
-                    status = FRAGMENT_SETTING;
-                  });
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(Icon(Icons.share), false, "Chia se", () {
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(Icon(Icons.apps), false, "Ung dung cua chung toi",
-                    () {
-                  Navigator.pop(context);
-                }),
-                itemDivider(),
-                itemDrawer(
-                    Icon(Icons.remove_circle), false, "Loai bo quang cao", () {
-                  Navigator.pop(context);
-                }),
-              ],
-            ))),
-        body: _getDrawerFragment());
+                              setState(() {
+                                if (myQr == "") {
+                                  status = FRAGMEMT_MYQR;
+                                } else {
+                                  typeCreate = 0;
+                                  status = FRAGMENT_RESULT_CREATE;
+                                }
+                              });
+                              Navigator.pop(context);
+                            }),
+                        itemDivider(),
+                        itemDrawer(Icon(Icons.create), status == FRAGMENT_CREATEQR,
+                            "Tao QR", () {
+                              setState(() {
+                                status = FRAGMENT_CREATEQR;
+                              });
+                              Navigator.pop(context);
+                            }),
+                        itemDivider(),
+                        itemDrawer(Icon(Icons.settings), false, "Cai dat", () {
+                          setState(() {
+                            status = FRAGMENT_SETTING;
+                          });
+                          Navigator.pop(context);
+                        }),
+                        itemDivider(),
+                        itemDrawer(Icon(Icons.share), false, "Chia se", () {
+                          Navigator.pop(context);
+                        }),
+                        itemDivider(),
+                        itemDrawer(
+                            Icon(Icons.apps), false, "Ung dung cua chung toi", () {
+                          Navigator.pop(context);
+                        }),
+                        itemDivider(),
+                        itemDrawer(
+                            Icon(Icons.remove_circle), false, "Loai bo quang cao",
+                                () {
+                              setState(() {
+                                status = FRAGMENT_FAQ;
+                              });
+                              Navigator.pop(context);
+                            }),
+                      ],
+                    )
+                  ],
+                ))),
+        body: _getDrawerFragment()), onWillPop: _popContext);
+  }
+
+  void _popContext(){
+
   }
 
   Future getImage() async {
@@ -441,9 +459,8 @@ class MainFragmentState extends State<MainFragment> {
     void _onQRCreateView(QRViewController controller) {
       this.controller = controller;
       controller.scannedDataStream.listen((event) {
-
         String formattedDate1 =
-        new DateFormat('dd-MM-yyyy kk:mm:ss').format(DateTime.now());
+            new DateFormat('dd-MM-yyyy kk:mm:ss').format(DateTime.now());
 
         QRCode qrCode1 = QRCode(
             id: 0,
@@ -457,7 +474,7 @@ class MainFragmentState extends State<MainFragment> {
 
         print("scannedDataStream " + event.code);
         // Navigator.push(context,  MaterialPageRoute(builder: (context) => ResultScreen(),));
-        setState(()  {
+        setState(() {
           String formattedDate =
               new DateFormat('dd-MM-yyyy kk:mm:ss').format(DateTime.now());
 
@@ -475,14 +492,11 @@ class MainFragmentState extends State<MainFragment> {
 
           widget.resultCode1(qrCode);
 
-          print("_onQRCreateView DatabaseProvider" );
-
-
+          print("_onQRCreateView DatabaseProvider");
 
           print("_onQRCreateView DatabaseProvider1");
         });
         print("_onQRCreateView DatabaseProvider2");
-
 
         print("_onQRCreateView DatabaseProvider3");
         // widget.callback(null);

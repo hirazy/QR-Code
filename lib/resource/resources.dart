@@ -4,6 +4,4 @@ class Resources{
   BuildContext context;
 
   Resources(this.context);
-
-
 }
